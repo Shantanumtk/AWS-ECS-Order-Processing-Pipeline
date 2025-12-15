@@ -1,0 +1,137 @@
+# ============================
+# Root .gitignore for multi-service Spring monorepo
+# (Maven or Gradle; applies to all submodules)
+# ============================
+
+# ---- Java / JVM ----
+*.class
+*.log
+*.ctxt
+hs_err_pid*
+replay_pid*
+*.hprof
+
+# ---- Build outputs (any depth) ----
+**/target/
+**/build/
+**/out/
+**/bin/
+
+# ---- Maven ----
+**/.mvn/timing.properties
+# Keep the Maven wrapper so teammates can build without Maven installed
+!**/.mvn/
+!**/.mvn/wrapper/
+!**/.mvn/wrapper/maven-wrapper.jar
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# ---- Gradle ----
+**/.gradle/
+**/build/
+# Keep the Gradle wrapper
+!**/gradle/
+!**/gradle/wrapper/
+!**/gradle/wrapper/gradle-wrapper.jar
+gradle-app.setting
+gradle-app.properties
+
+# Keep wrapper scripts (tracked)
+!**/mvnw
+!**/mvnw.cmd
+!**/gradlew
+!**/gradlew.bat
+
+# ---- Spring config conventions ----
+# Track your default configs, ignore local/dev secrets variants
+**/application-local.properties
+**/application-local.yml
+**/application-local.yaml
+**/application-*.local.properties
+**/application-*.local.yml
+**/application-*.local.yaml
+
+# Common secrets
+**/.env
+**/.env.*
+**/*.key
+**/*.pem
+**/*.p12
+**/*.jks
+**/*.keystore
+**/*.truststore
+
+# ---- Test reports & coverage ----
+**/surefire-reports/
+**/failsafe-reports/
+**/test-output/
+**/jacoco/
+**/coverage/
+**/*.exec
+
+# ---- IDEs / Editors ----
+# IntelliJ
+**/.idea/
+**/*.iml
+**/*.iws
+**/*.ipr
+# Eclipse
+**/.project
+**/.classpath
+**/.settings/
+**/.loadpath
+**/.factorypath
+**/.recommenders/
+# VS Code
+**/.vscode/
+# NetBeans
+**/nbproject/private/
+**/nbbuild/
+**/dist/
+**/nbdist/
+**/.nb-gradle/
+
+# ---- OS junk ----
+**/.DS_Store
+**/Thumbs.db
+**/Desktop.ini
+
+# ---- Containers / tooling (optional) ----
+**/node_modules/
+**/docker-data/
+
+# ---- Terraform ----
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfplan
+**/tfplan
+.terragrunt-cache/
+
+# Keep lock file for reproducible init
+!**/.terraform.lock.hcl
+
+# Keep the dependency lock file for reproducible 'terraform init'
+**/.terraform.lock.hcl
++**/.terraform.lock.hcl
++**/*.tfplan
++**/tfplan
+.ssh/
+
+# SSH keys
+*.pem
+*.key
+!*.key.pub
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
