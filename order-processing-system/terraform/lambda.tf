@@ -29,6 +29,7 @@ resource "aws_lambda_function" "create_order" {
       DB_PASSWORD   = var.db_password
       SQS_QUEUE_URL = aws_sqs_queue.order_queue.url
       ENVIRONMENT   = var.environment
+      AWS_REGION    = var.aws_region
     }
   }
 

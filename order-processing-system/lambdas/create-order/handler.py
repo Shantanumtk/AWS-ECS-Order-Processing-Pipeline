@@ -188,7 +188,7 @@ async def create_order(request: CreateOrderRequest):
         raise HTTPException(status_code=500, detail=f"Failed to create order: {str(e)}")
 
 
-handler = Mangum(app, lifespan="off")
+mangum_handler = Mangum(app, lifespan="off",api_gateway_base_path="/dev")
 
 def handler(event, context):
     import json

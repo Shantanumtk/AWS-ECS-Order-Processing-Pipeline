@@ -30,6 +30,8 @@ CREATE INDEX IF NOT EXISTS idx_orders_customer_email ON orders(customer_email);
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items(order_id);
 CREATE INDEX IF NOT EXISTS idx_order_status_log_order_id ON order_status_log(order_id);
+CREATE INDEX IF NOT EXISTS idx_order_status_log_created_at ON order_status_log(order_id, created_at DESC);
+
 
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$

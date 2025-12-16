@@ -165,4 +165,4 @@ async def list_orders(
         raise HTTPException(status_code=500, detail=f"Failed to list orders: {str(e)}")
 
 
-handler = Mangum(app, lifespan="off")
+handler = Mangum(app, lifespan="off", api_gateway_base_path="/dev")

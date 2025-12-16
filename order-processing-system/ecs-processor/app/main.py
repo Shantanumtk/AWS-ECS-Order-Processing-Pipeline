@@ -67,30 +67,82 @@ def process_message(message: dict, processor: OrderProcessor, notifier: SNSNotif
             logger.error("Message missing order_id")
             return False
 
+        # Extract order details from message
+        customer_name = body.get("customer_name", "Valued Customer")
+        customer_email = body.get("customer_email", "")
+        items = body.get("items", [])
+        total_amount = body.get("total_amount", 0)
+
         logger.info(f"Processing order: {order_id}")
         conn = get_db_connection()
 
         try:
+            # PROCESSING
             processor.update_order_status(conn, order_id, "PROCESSING", "Order processing started")
-            notifier.send_notification(order_id, "PROCESSING", f"Order {order_id} is now being processed")
+            notifier.send_notification(
+                order_id=order_id,
+                event_type="PROCESSING",
+                message=f"Order {order_id} is now being processed",
+                customer_name=customer_name,
+                customer_email=customer_email,
+                items=items,
+                total_amount=total_amount
+            )
 
+            # PAYMENT
             logger.info(f"Processing payment for order {order_id}")
-            payment_success = processor.process_payment(conn, order_id, body.get("total_amount", 0))
+            payment_success = processor.process_payment(conn, order_id, total_amount)
 
             if payment_success:
+                # PAYMENT CONFIRMED
                 processor.update_order_status(conn, order_id, "PAYMENT_CONFIRMED", "Payment processed successfully")
-                notifier.send_notification(order_id, "PAYMENT_CONFIRMED", f"Payment confirmed for order {order_id}")
+                notifier.send_notification(
+                    order_id=order_id,
+                    event_type="PAYMENT_CONFIRMED",
+                    message=f"Payment confirmed for order {order_id}",
+                    customer_name=customer_name,
+                    customer_email=customer_email,
+                    items=items,
+                    total_amount=total_amount
+                )
 
+                # FULFILLED
                 logger.info(f"Fulfilling order {order_id}")
                 processor.fulfill_order(conn, order_id)
                 processor.update_order_status(conn, order_id, "FULFILLED", "Order has been fulfilled")
-                notifier.send_notification(order_id, "FULFILLED", f"Order {order_id} has been fulfilled!")
+                notifier.send_notification(
+                    order_id=order_id,
+                    event_type="FULFILLED",
+                    message=f"Order {order_id} has been fulfilled!",
+                    customer_name=customer_name,
+                    customer_email=customer_email,
+                    items=items,
+                    total_amount=total_amount
+                )
 
+                # COMPLETED
                 processor.update_order_status(conn, order_id, "COMPLETED", "Order completed successfully")
-                notifier.send_notification(order_id, "COMPLETED", f"Order {order_id} completed. Thank you!")
+                notifier.send_notification(
+                    order_id=order_id,
+                    event_type="COMPLETED",
+                    message=f"Order {order_id} completed. Thank you!",
+                    customer_name=customer_name,
+                    customer_email=customer_email,
+                    items=items,
+                    total_amount=total_amount
+                )
             else:
+                # PAYMENT FAILED
                 processor.update_order_status(conn, order_id, "PAYMENT_FAILED", "Payment processing failed")
-                notifier.send_notification(order_id, "PAYMENT_FAILED", f"Payment failed for order {order_id}")
+                notifier.send_notification(
+                    order_id=order_id,
+                    event_type="PAYMENT_FAILED",
+                    message=f"Payment failed for order {order_id}",
+                    customer_name=customer_name,
+                    customer_email=customer_email,
+                    items=items,
+                    total_amount=total_amount
+                )
                 return False
 
             conn.commit()
@@ -101,7 +153,15 @@ def process_message(message: dict, processor: OrderProcessor, notifier: SNSNotif
             conn.rollback()
             logger.error(f"Error processing order {order_id}: {e}")
             processor.update_order_status(conn, order_id, "FAILED", str(e))
-            notifier.send_notification(order_id, "FAILED", f"Order {order_id} failed: {str(e)}")
+            notifier.send_notification(
+                order_id=order_id,
+                event_type="FAILED",
+                message=f"Order {order_id} failed: {str(e)}",
+                customer_name=customer_name,
+                customer_email=customer_email,
+                items=items,
+                total_amount=total_amount
+            )
             conn.commit()
             return False
         finally:
